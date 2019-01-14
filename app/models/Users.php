@@ -1,6 +1,19 @@
 <?php
+namespace App\Models;
+use Core\Model;
+use App\Models\Users;
+use App\Models\UserSessions;
+use Core\Cookie;
+use Core\Session;
+use Core\Validators\MinValidator;
+use Core\Validators\MaxValidator;
+use Core\Validators\RequiredValidator;
+use Core\Validators\EmailValidator;
+use Core\Validators\MatchesValidator;
+use Core\Validators\UniqueValidator;
+
 class Users extends Model {
-  private $_isLoggedIn, $_sessionName, $_cookieName,$_confirm;
+  private $_isLoggedIn, $_sessionName, $_cookieName, $_confirm;
   public static $currentLoggedInUser = null;
   public $id,$username,$email,$password,$fname,$lname,$acl,$deleted = 0;
 
@@ -12,9 +25,9 @@ class Users extends Model {
     $this->_softDelete = true;
     if($user != '') {
       if(is_int($user)) {
-        $u = $this->_db->findFirst('users',['conditions'=>'id = ?', 'bind'=>[$user]],'Users');
+        $u = $this->_db->findFirst('users',['conditions'=>'id = ?', 'bind'=>[$user]],'App\Models\Users');
       } else {
-        $u = $this->_db->findFirst('users', ['conditions'=>'username = ?','bind'=>[$user]],'Users');
+        $u = $this->_db->findFirst('users', ['conditions'=>'username = ?','bind'=>[$user]],'App\Models\Users');
       }
       if($u) {
         foreach($u as $key => $val) {
@@ -25,20 +38,17 @@ class Users extends Model {
   }
 
   public function validator(){
-    // first and last name validators
-    $this->runValidation(new RequiredValidator($this,['field'=>'fname','msg'=>"First Name is required."],true));
-    $this->runValidation(new RequiredValidator($this,['field'=>'lname','msg'=>"Last Name is required."]));
-    // email validator
-    $this->runValidation(new RequiredValidator($this,['field'=>'email','msg'=>"Email is required"]));
-    $this->runValidation(new EmailValidator($this,['field'=>'email','msg'=>"You must provide a valid email address"]));
-    $this->runValidation(new MaxValidator($this,['field'=>'email','rule'=>150,'msg'=>"Email must be no more than 150 characters."]));
-    // username validators
-    $this->runValidation(new UniqueValidator($this,['field'=>['username'],'msg'=>"Username already taken. Please choose a new one."]));
-    $this->runValidation(new MinValidator($this,['field'=>'username','rule'=>6,'msg'=>"Username must be at least 6 characters."]));
-    $this->runValidation(new MaxValidator($this,['field'=>'username','rule'=>150,'msg'=>"Username must be no more than 150 characters."]));
-    //password validators
-    $this->runValidation(new MinValidator($this,['field'=>'password','rule'=>6,'msg'=>"Password must be at least 6 characters."]));
-    $this->runValidation(new MatchesValidator($this,['field'=>'password','rule'=>$this->_confirm,'msg'=>"Your passwords do not match."]));
+    $this->runValidation(new RequiredValidator($this,['field'=>'fname','msg'=>'First Name is required.']));
+    $this->runValidation(new RequiredValidator($this,['field'=>'lname','msg'=>'Last Name is required.']));
+    $this->runValidation(new RequiredValidator($this,['field'=>'email','msg'=>'Email is required.']));
+    $this->runValidation(new EmailValidator($this, ['field'=>'email','msg'=>'You must provide a valid email address']));
+    $this->runValidation(new MaxValidator($this,['field'=>'email','rule'=>150,'msg'=>'Email must be less than 150 characters.']));
+    $this->runValidation(new MinValidator($this,['field'=>'username','rule'=>6,'msg'=>'Username must be at least 6 characters.']));
+    $this->runValidation(new MaxValidator($this,['field'=>'username','rule'=>150,'msg'=>'Username must be less than 150 characters.']));
+    $this->runValidation(new UniqueValidator($this,['field'=>'username','msg'=>'That username already exists. Please choose a new one.']));
+    $this->runValidation(new RequiredValidator($this,['field'=>'password','msg'=>'Password is required.']));
+    $this->runValidation(new MinValidator($this,['field'=>'password','msg'=>'Password must be a minimum of 6 characters']));
+    $this->runValidation(new MatchesValidator($this,['field'=>'password','rule'=>$this->_confirm,'msg'=>"Your passwords do not match"]));
   }
 
   public function beforeSave(){
@@ -92,21 +102,16 @@ class Users extends Model {
     return true;
   }
 
-  public function registerNewUser($params) {
-    $this->assign($params);
-    $this->save();
-  }
-
   public function acls() {
     if(empty($this->acl)) return [];
     return json_decode($this->acl, true);
   }
 
-  public function getConfirm(){
-    return $this->_confirm;
-  }
-
   public function setConfirm($value){
     $this->_confirm = $value;
+  }
+
+  public function getConfirm(){
+    return $this->_confirm;
   }
 }

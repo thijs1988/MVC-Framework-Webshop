@@ -1,4 +1,9 @@
 <?php
+namespace App\Controllers;
+use Core\Controller;
+use Core\Router;
+use App\Models\Users;
+use App\Models\Login;
 
 class RegisterController extends Controller {
 
@@ -10,20 +15,19 @@ class RegisterController extends Controller {
 
   public function loginAction() {
     $loginModel = new Login();
-    // $loginModel->setCsrfCheck(true);
     if($this->request->isPost()) {
-      $this->request->csrfCheck();
       // form validation
-      $loginModel->assign($_POST);
+      $this->request->csrfCheck();
+      $loginModel->assign($this->request->get());
       $loginModel->validator();
       if($loginModel->validationPassed()){
         $user = $this->UsersModel->findByUsername($_POST['username']);
-        if($user && password_verify($loginModel->password, $user->password)) {
-          $remember = (isset($_POST['remember_me']) && $loginModel->remember_me) ? true : false;
+        if($user && password_verify($this->request->get('password'), $user->password)) {
+          $remember = $loginModel->getRememberMeChecked();
           $user->login($remember);
           Router::redirect('');
         }  else {
-          $loginModel->addErrorMessage('username',"There is an error with your username or password.");
+          $loginModel->addErrorMessage('username','There is an error with your username or password');
         }
       }
     }
@@ -41,15 +45,12 @@ class RegisterController extends Controller {
 
   public function registerAction() {
     $newUser = new Users();
-    $confirm = '';
     if($this->request->isPost()) {
       $this->request->csrfCheck();
       $newUser->assign($this->request->get());
       $newUser->setConfirm($this->request->get('confirm'));
       if($newUser->save()){
         Router::redirect('register/login');
-      } else {
-        $newUser->setConfirm('');
       }
     }
     $this->view->newUser = $newUser;

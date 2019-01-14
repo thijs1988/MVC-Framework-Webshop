@@ -1,4 +1,7 @@
 <?php
+  namespace Core;
+  use Core\Session;
+  use App\Models\Users;
 
   class Router {
 
@@ -25,7 +28,7 @@
 
       //params
       $queryParams = $url;
-
+      $controller = 'App\Controllers\\' . $controller;
       $dispatch = new $controller($controller_name, $action);
 
       if(method_exists($controller, $action)) {
@@ -114,7 +117,7 @@
       if(preg_match('/https?:\/\//', $val) == 1) {
         return $val;
       } else {
-        $uAry = explode('/', $val);
+        $uAry = explode(DS, $val);
         $controller_name = ucwords($uAry[0]);
         $action_name = (isset($uAry[1]))? $uAry[1] : '';
         if(self::hasAccess($controller_name, $action_name)) {

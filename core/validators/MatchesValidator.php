@@ -1,7 +1,11 @@
 <?php
-class MatchesValidator extends CustomValidator{
+namespace Core\Validators;
+use Core\Validators\CustomValidator;
+
+class MatchesValidator extends CustomValidator {
 
   public function runValidation(){
-    return ($this->_model->{$this->field} == $this->rule);
+    $value = $this->_model->{$this->field};
+    return $value == $this->rule;
   }
 }

@@ -1,4 +1,6 @@
 <?php
+namespace Core;
+use Core\Session;
 
 class FH {
   public static function inputBlock($type, $label, $name, $value='', $inputAttrs=[], $divAttrs=[]){
@@ -22,6 +24,16 @@ class FH {
     $inputString = self::stringifyAttrs($inputAttrs);
     $html = '<div'.$divString.'>';
     $html .= '<input type="submit" value="'.$buttonText.'"'.$inputString.' />';
+    $html .= '</div>';
+    return $html;
+  }
+
+  public static function checkboxBlock($label,$name,$checked=false,$inputAttrs=[],$divAttrs=[]){
+    $divString = self::stringifyAttrs($divAttrs);
+    $inputString = self::stringifyAttrs($inputAttrs);
+    $checkString = ($checked)? ' checked="checked"' : '';
+    $html = '<div'.$divString.'>';
+    $html .= '<label for="'.$name.'">'.$label.' <input type="checkbox" id="'.$name.'" name="'.$name.'" value="on"'.$checkString.$inputString.'></label>';
     $html .= '</div>';
     return $html;
   }
@@ -59,4 +71,16 @@ class FH {
     }
     return $clean_ary;
   }
+
+  public static function displayErrors($errors) {
+    $hasErrors = (!empty($errors))? ' has-errors' : '';
+    $html = '<div class="form-errors"><ul class="bg-danger'.$hasErrors.'">';
+    foreach($errors as $field => $error) {
+      $html .= '<li class="text-danger">'.$error.'</li>';
+      $html .= '<script>jQuery("document").ready(function(){jQuery("#'.$field.'").parent().closest("div").addClass("has-error");});</script>';
+    }
+    $html .= '</ul></div>';
+    return $html;
+  }
+
 }

@@ -1,4 +1,5 @@
 <?php
+namespace Core;
 
 class H {
   public static function dnd($data) {
