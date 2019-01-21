@@ -79,11 +79,14 @@ class Model {
 
   public function delete($id = '') {
     if($id == '' && $this->id == '') return false;
+    $this->beforeDelete();
     $id = ($id == '')? $this->id : $id;
     if($this->_softDelete) {
-      return $this->update($id, ['deleted' => 1]);
+      $deleted = $this->update($id, ['deleted' => 1]);
     }
-    return $this->_db->delete($this->_table, $id);
+    $deleted = $this->_db->delete($this->_table, $id);
+    $this->afterDelete();
+    return $deleted;
   }
 
   public function query($sql, $bind=[]) {
@@ -98,16 +101,30 @@ class Model {
     return $data;
   }
 
-  public function assign($params) {
-    if(!empty($params)) {
-      foreach($params as $key => $val) {
-        if(property_exists($this,$key)){
-          $this->$key = $val;
+  /**
+   * Update the object with an associative array
+   * @method assign
+   * @param  array   $params    associative array of values to update ['property'=>'new value']
+   * @param  array   $list      (optional) indexed array of keys that are to be validated against
+   * @param  boolean $blackList (optional) if blacklist is set to true the list param will be treated like a blacklist else it will be treated like a whitelist
+   * @return object             returns a model object allows for chaining.
+   */
+  public function assign($params,$list=[],$blackList=true) {
+    foreach($params as $key => $val) {
+      // check if there is permission to update the object
+      $whiteListed = true;
+      if(sizeof($list) > 0){
+        if($blackList){
+          $whiteListed = !in_array($key,$list);
+        } else {
+          $whiteListed = in_array($key,$list);
         }
       }
-      return true;
+      if(property_exists($this,$key) && $whiteListed){
+        $this->$key = $val;
+      }
     }
-    return false;
+    return $this;
   }
 
   protected function populateObjData($result) {
@@ -116,7 +133,7 @@ class Model {
     }
   }
 
-  public function validator(){}
+
 
   public function runValidation($validator){
     $key = $validator->field;
@@ -141,7 +158,9 @@ class Model {
       $this->_validationErrors[$field] = $msg;
     }
   }
-
+  public function beforeDelete(){}
+  public function afterDelete(){}
+  public function validator(){}
   public function beforeSave(){}
   public function afterSave(){}
 }
