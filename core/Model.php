@@ -121,8 +121,7 @@ class Model {
   public function runValidation($validator){
     $key = $validator->field;
     if(!$validator->success){
-      $this->_validates = false;
-      $this->_validationErrors[$key] = $validator->msg;
+      $this->addErrorMessage($key,$validator->msg);
     }
   }
 
@@ -136,7 +135,11 @@ class Model {
 
   public function addErrorMessage($field,$msg){
     $this->_validates = false;
-    $this->_validationErrors[$field] = $msg;
+    if(array_key_exists($field,$this->_validationErrors)){
+      $this->_validationErrors[$field] .= " " . $msg;
+    } else {
+      $this->_validationErrors[$field] = $msg;
+    }
   }
 
   public function beforeSave(){}
