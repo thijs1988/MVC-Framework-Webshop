@@ -16,6 +16,7 @@ class Users extends Model {
   private $_isLoggedIn, $_sessionName, $_cookieName, $_confirm;
   public static $currentLoggedInUser = null;
   public $id,$username,$email,$password,$fname,$lname,$acl,$deleted = 0;
+  public const blackListedFormKeys = ['id','deleted'];
 
   public function __construct($user='') {
     $table = 'users';
