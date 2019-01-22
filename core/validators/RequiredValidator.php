@@ -4,8 +4,8 @@ use Core\Validators\CustomValidator;
 
 class RequiredValidator extends CustomValidator {
   public function runValidation(){
-    $value = $this->_model->{$this->field};
-    $passes = (!empty($value));
+    $value = trim($this->_model->{$this->field});
+    $passes = ($value != '' && isset($value));
     return $passes;
   }
 }

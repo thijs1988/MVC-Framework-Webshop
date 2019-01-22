@@ -12,13 +12,13 @@
       $this->_action = $action;
       $this->request = new Input();
       $this->view = new View();
+      $this->onConstruct();
     }
 
-    protected function load_model($model) {
-      $modelPath = 'App\Models\\' . $model;
-      if(class_exists($modelPath)) {
-        $this->{$model.'Model'} = new $modelPath();
-      }
-    }
+    /**
+     * Called when a Controller object is constructed
+     * @method onConstruct
+     */
+    public function onConstruct(){}
 
   }

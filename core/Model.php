@@ -1,6 +1,9 @@
 <?php
 namespace Core;
 
+/**
+ * Parent class for App Models
+ */
 class Model {
   protected $_db, $_table, $_modelName, $_softDelete = false,$_validates=true,$_validationErrors=[];
   public $id;
@@ -11,10 +14,36 @@ class Model {
     $this->_modelName = str_replace(' ', '', ucwords(str_replace('_',' ', $this->_table)));
   }
 
+  /**
+   * query database table for model to get column information
+   * @method get_columns
+   * @return object      columns object
+   */
   public function get_columns() {
     return $this->_db->get_columns($this->_table);
   }
 
+  /**
+   * gets an associative array of field values for insert or updating
+   * @method getColumnsForSave
+   * @return array            associative array of fields from database and values from model object
+   */
+  public function getColumnsForSave(){
+    $columns = $this->get_columns();
+    $fields = [];
+    foreach($columns as $column){
+      $key = $column->Field;
+      $fields[$key] = $this->{$key};
+    }
+    return $fields;
+  }
+
+  /**
+   * adds to the conditions to avoid getting soft deleted rows returned
+   * @method _softDeleteParams
+   * @param  array            $params  defined parameters to search by
+   * @return array            $params  parameters with appended conditions for soft delete
+   */
   protected function _softDeleteParams($params){
     if($this->_softDelete){
       if(array_key_exists('conditions',$params)){
@@ -30,6 +59,12 @@ class Model {
     return $params;
   }
 
+  /**
+   * Find a result set
+   * @method find
+   * @param  array  $params conditions
+   * @return array          array of rows or an empty array if none found
+   */
   public function find($params = []) {
     $params = $this->_softDeleteParams($params);
     $resultsQuery = $this->_db->find($this->_table, $params,get_class($this));
@@ -37,24 +72,41 @@ class Model {
     return $resultsQuery;
   }
 
+  /**
+   * Find the first object that matches the conditions
+   * @method findFirst
+   * @param  array     $params array of conditions and binds
+   * @return object | false      returns Model object or false if one is not found
+   */
   public function findFirst($params = []) {
     $params = $this->_softDeleteParams($params);
     $resultQuery = $this->_db->findFirst($this->_table, $params,get_class($this));
     return $resultQuery;
   }
 
+  /**
+   * Finds a row for this model by id
+   * @method findById
+   * @param  integer   $id id of the object to return
+   * @return object        Model Object
+   */
   public function findById($id) {
     return $this->findFirst(['conditions'=>"id = ?", 'bind' => [$id]]);
   }
 
+  /**
+   * Save the current properties to the database
+   * @method save
+   * @return boolean
+   */
   public function save() {
     $this->validator();
     if($this->_validates){
       $this->beforeSave();
-      $fields = H::getObjectProperties($this);
+      $fields = $this->getColumnsForSave();
       // determine whether to update or insert
       if(property_exists($this, 'id') && $this->id != '') {
-        $save = $this->update($this->id, $fields);
+        $save = $this->update($fields);
         $this->afterSave();
         return $save;
       } else {
@@ -66,33 +118,62 @@ class Model {
     return false;
   }
 
+  /**
+   * Insert a row into the database
+   * @method insert
+   * @param  array $fields associative array ['field'=>'value']
+   * @return boolean       returns if the insert was successful
+   */
   public function insert($fields) {
     if(empty($fields)) return false;
     if(array_key_exists('id', $fields)) unset($fields['id']);
     return $this->_db->insert($this->_table, $fields);
   }
 
-  public function update($id, $fields) {
-    if(empty($fields) || $id == '') return false;
-    return $this->_db->update($this->_table, $id, $fields);
+  /**
+   * Update a row in the database
+   * @method update
+   * @param  array $fields associative array of fields to update ['field'=>'value']
+   * @return boolean       if the update was successful
+   */
+  public function update($fields) {
+    if(empty($fields) || $this->id == '') return false;
+    return $this->_db->update($this->_table, $this->id, $fields);
   }
 
-  public function delete($id = '') {
-    if($id == '' && $this->id == '') return false;
+  /**
+   * Delete a row in the database, could also be soft delete
+   * @method delete
+   * @return boolean     [description]
+   */
+  public function delete() {
+    if($this->id == '' || !isset($this->id)) return false;
     $this->beforeDelete();
-    $id = ($id == '')? $this->id : $id;
     if($this->_softDelete) {
-      $deleted = $this->update($id, ['deleted' => 1]);
+      $deleted = $this->update(['deleted' => 1]);
+    } else {
+      $deleted = $this->_db->delete($this->_table, $this->id);
     }
-    $deleted = $this->_db->delete($this->_table, $id);
     $this->afterDelete();
     return $deleted;
   }
 
+  /**
+   * Used to run a manual query on this model's table
+   * @method query
+   * @param  [type] $sql  [description]
+   * @param  array  $bind [description]
+   * @return [type]       [description]
+   */
   public function query($sql, $bind=[]) {
     return $this->_db->query($sql, $bind);
   }
 
+  /**
+   * Returns an object with only the properties set. Removes all methods. Can be used to save memory for large datasets.
+   * @method data
+   * @return object
+   */
   public function data() {
     $data = new stdClass();
     foreach(H::getObjectProperties($this) as $column => $value) {
@@ -127,14 +208,11 @@ class Model {
     return $this;
   }
 
-  protected function populateObjData($result) {
-    foreach($result as $key => $val) {
-      $this->$key = $val;
-    }
-  }
-
-
-
+  /**
+   * Runs a validator object and sets validates boolean and adds error message if validator fails
+   * @method runValidation
+   * @param  object        $validator Validator Object
+   */
   public function runValidation($validator){
     $key = $validator->field;
     if(!$validator->success){
@@ -142,14 +220,30 @@ class Model {
     }
   }
 
+  /**
+   * A getter for the model object validation errors
+   * @method getErrorMessages
+   * @return array           returns an empty array for no errors or an associative array for errors ['field'=>'msg']
+   */
   public function getErrorMessages(){
     return $this->_validationErrors;
   }
 
+  /**
+   * Getter for _validates can be used to see if validation passed
+   * @method validationPassed
+   * @return boolean          validation true means validation passed
+   */
   public function validationPassed(){
     return $this->_validates;
   }
 
+  /**
+   * Method used to add an error message to the model object
+   * @method addErrorMessage
+   * @param  string          $field property to add the error on. This should match the form field
+   * @param  string          $msg   error message to display to the user
+   */
   public function addErrorMessage($field,$msg){
     $this->_validates = false;
     if(array_key_exists($field,$this->_validationErrors)){
@@ -158,9 +252,35 @@ class Model {
       $this->_validationErrors[$field] = $msg;
     }
   }
+
+  /**
+   * Method that is called before delete
+   * @method beforeDelete
+   */
   public function beforeDelete(){}
+
+  /**
+   * Method that is called after delete
+   * @method afterDelete
+   */
   public function afterDelete(){}
-  public function validator(){}
+
+  /**
+   * Method that is called before save
+   * @method beforeSave
+   */
   public function beforeSave(){}
+
+  /**
+   * Method that is called after save
+   * @method afterSave
+   */
   public function afterSave(){}
+
+  /**
+   * Method that is called on save if validation fails the save function will not proceed
+   * @method validator
+   */
+  public function validator(){}
+
 }

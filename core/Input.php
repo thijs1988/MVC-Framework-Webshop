@@ -26,11 +26,11 @@ class Input {
       // return entire request array and sanitize it
       $data = [];
       foreach($_REQUEST as $field => $value){
-        $data[$field] = FH::sanitize($value);
+        $data[$field] = trim(FH::sanitize($value));
       }
       return $data;
     }
-    return FH::sanitize($_REQUEST[$input]);
+    return trim(FH::sanitize($_REQUEST[$input]));
   }
 
   public function csrfCheck(){
