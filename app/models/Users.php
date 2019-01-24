@@ -14,28 +14,15 @@ use Core\Validators\UniqueValidator;
 
 class Users extends Model {
   private $_isLoggedIn, $_sessionName, $_cookieName, $_confirm;
+  protected $_table='users';
   public static $currentLoggedInUser = null;
   public $id,$username,$email,$password,$fname,$lname,$acl,$deleted = 0;
   public const blackListedFormKeys = ['id','deleted'];
 
-  public function __construct($user='') {
-    $table = 'users';
-    parent::__construct($table);
+  public function onConstruct(){
     $this->_sessionName = CURRENT_USER_SESSION_NAME;
     $this->_cookieName = REMEMBER_ME_COOKIE_NAME;
     $this->_softDelete = true;
-    if($user != '') {
-      if(is_int($user)) {
-        $u = $this->_db->findFirst('users',['conditions'=>'id = ?', 'bind'=>[$user]],'App\Models\Users');
-      } else {
-        $u = $this->_db->findFirst('users', ['conditions'=>'username = ?','bind'=>[$user]],'App\Models\Users');
-      }
-      if($u) {
-        foreach($u as $key => $val) {
-          $this->$key = $val;
-        }
-      }
-    }
   }
 
   public function validator(){
@@ -49,11 +36,16 @@ class Users extends Model {
     $this->runValidation(new UniqueValidator($this,['field'=>'username','msg'=>'That username already exists. Please choose a new one.']));
     $this->runValidation(new RequiredValidator($this,['field'=>'password','msg'=>'Password is required.']));
     $this->runValidation(new MinValidator($this,['field'=>'password','rule'=>6,'msg'=>'Password must be a minimum of 6 characters.']));
-    $this->runValidation(new MatchesValidator($this,['field'=>'password','rule'=>$this->_confirm,'msg'=>"Your passwords do not match."]));
+    if($this->isNew()){
+      $this->runValidation(new MatchesValidator($this,['field'=>'password','rule'=>$this->_confirm,'msg'=>"Your passwords do not match."]));
+    }
   }
 
   public function beforeSave(){
-    $this->password = password_hash($this->password, PASSWORD_DEFAULT);
+    $this->timeStamps();
+    if($this->isNew()){
+      $this->password = password_hash($this->password, PASSWORD_DEFAULT);
+    }
   }
 
   public function findByUsername($username) {
@@ -62,8 +54,8 @@ class Users extends Model {
 
   public static function currentUser() {
     if(!isset(self::$currentLoggedInUser) && Session::exists(CURRENT_USER_SESSION_NAME)) {
-      $u = new Users((int)Session::get(CURRENT_USER_SESSION_NAME));
-      self::$currentLoggedInUser = $u;
+      $u = new Users();
+      self::$currentLoggedInUser = $u->findById((int)Session::get(CURRENT_USER_SESSION_NAME));
     }
     return self::$currentLoggedInUser;
   }
