@@ -8,10 +8,10 @@ class Model {
   protected $_db, $_table, $_modelName, $_softDelete = false,$_validates=true,$_validationErrors=[];
   public $id;
 
-  public function __construct($table) {
+  public function __construct() {
     $this->_db = DB::getInstance();
-    $this->_table = $table;
     $this->_modelName = str_replace(' ', '', ucwords(str_replace('_',' ', $this->_table)));
+    $this->onConstruct();
   }
 
   /**
@@ -101,21 +101,26 @@ class Model {
    */
   public function save() {
     $this->validator();
+    $save = false;
     if($this->_validates){
       $this->beforeSave();
       $fields = $this->getColumnsForSave();
       // determine whether to update or insert
-      if(property_exists($this, 'id') && $this->id != '') {
-        $save = $this->update($fields);
-        $this->afterSave();
-        return $save;
-      } else {
+      if($this->isNew()) {
         $save = $this->insert($fields);
+        // populate object with the id
+        if($save){
+          $this->id = $this->_db->lastID();
+        }
+      } else {
+        $save = $this->update($fields);
+      }
+      // run after save
+      if($save){
         $this->afterSave();
-        return $save;
       }
     }
-    return false;
+    return $save;
   }
 
   /**
@@ -282,5 +287,33 @@ class Model {
    * @method validator
    */
   public function validator(){}
+
+  /**
+   * Runs when the object is constructed
+   * @method onConstruct
+   */
+  public function onConstruct(){}
+
+  /**
+   * Populates the appropriate time stamps for created_at and updated_at
+   * @method timeStamps
+   */
+  public function timeStamps(){
+    $dt = new \DateTime("now", new \DateTimeZone("UTC"));
+    $now = $dt->format('Y-m-d H:i:s');
+    $this->updated_at = $now;
+    if($this->isNew()){
+      $this->created_at = $now;
+    }
+  }
+
+  /**
+   * Determine if the object is a new insertion or previous record
+   * @method isNew
+   * @return boolean returns true if there isn't an id false if there is one
+   */
+  protected function isNew(){
+    return (property_exists($this,'id') && !empty($this->id))? false : true;
+  }
 
 }
