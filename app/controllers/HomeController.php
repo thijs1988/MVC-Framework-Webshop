@@ -7,9 +7,6 @@
   class HomeController extends Controller {
 
     public function indexAction() {
-      $user = Users::currentUser();
-      $user->username = 'curtis';
-      $user->save();
       $this->view->render('home/index');
     }
   }
