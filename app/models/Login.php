@@ -5,7 +5,7 @@ use Core\Validators\RequiredValidator;
 
 class Login extends Model {
   public $username, $password, $remember_me;
-  protected $_table = 'tmp_fake';
+  protected static $_table = 'tmp_fake';
 
   public function validator(){
     $this->runValidation(new RequiredValidator($this,['field'=>'username','msg'=>'Username is required.']));

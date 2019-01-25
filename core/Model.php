@@ -5,13 +5,20 @@ namespace Core;
  * Parent class for App Models
  */
 class Model {
-  protected $_db, $_table, $_modelName, $_softDelete = false,$_validates=true,$_validationErrors=[];
+  protected $_modelName, $_validates=true,$_validationErrors=[];
   public $id;
+  protected static $_db, $_table, $_softDelete=false;
 
   public function __construct() {
-    $this->_db = DB::getInstance();
-    $this->_modelName = str_replace(' ', '', ucwords(str_replace('_',' ', $this->_table)));
+    $this->_modelName = str_replace(' ', '', ucwords(str_replace('_',' ', static::$_table)));
     $this->onConstruct();
+  }
+
+  public static function getDb(){
+    if(!self::$_db) {
+      self::$_db = DB::getInstance();
+    }
+    return self::$_db;
   }
 
   /**
@@ -19,8 +26,8 @@ class Model {
    * @method get_columns
    * @return object      columns object
    */
-  public function get_columns() {
-    return $this->_db->get_columns($this->_table);
+  public static function get_columns() {
+    return static::getDb()->get_columns(static::$_table);
   }
 
   /**
@@ -29,7 +36,7 @@ class Model {
    * @return array            associative array of fields from database and values from model object
    */
   public function getColumnsForSave(){
-    $columns = $this->get_columns();
+    $columns = static::get_columns();
     $fields = [];
     foreach($columns as $column){
       $key = $column->Field;
@@ -44,8 +51,8 @@ class Model {
    * @param  array            $params  defined parameters to search by
    * @return array            $params  parameters with appended conditions for soft delete
    */
-  protected function _softDeleteParams($params){
-    if($this->_softDelete){
+  protected static function _softDeleteParams($params){
+    if(static::$_softDelete){
       if(array_key_exists('conditions',$params)){
         if(is_array($params['conditions'])){
           $params['conditions'][] = "deleted != 1";
@@ -65,9 +72,9 @@ class Model {
    * @param  array  $params conditions
    * @return array          array of rows or an empty array if none found
    */
-  public function find($params = []) {
-    $params = $this->_softDeleteParams($params);
-    $resultsQuery = $this->_db->find($this->_table, $params,get_class($this));
+  public static function find($params = []) {
+    $params = static::_softDeleteParams($params);
+    $resultsQuery = static::getDb()->find(static::$_table, $params,static::class);
     if(!$resultsQuery) return [];
     return $resultsQuery;
   }
@@ -78,9 +85,9 @@ class Model {
    * @param  array     $params array of conditions and binds
    * @return object | false      returns Model object or false if one is not found
    */
-  public function findFirst($params = []) {
-    $params = $this->_softDeleteParams($params);
-    $resultQuery = $this->_db->findFirst($this->_table, $params,get_class($this));
+  public static function findFirst($params = []) {
+    $params = static::_softDeleteParams($params);
+    $resultQuery = static::getDb()->findFirst(static::$_table, $params,static::class);
     return $resultQuery;
   }
 
@@ -90,8 +97,8 @@ class Model {
    * @param  integer   $id id of the object to return
    * @return object        Model Object
    */
-  public function findById($id) {
-    return $this->findFirst(['conditions'=>"id = ?", 'bind' => [$id]]);
+  public static function findById($id) {
+    return static::findFirst(['conditions'=>"id = ?", 'bind' => [$id]]);
   }
 
   /**
@@ -110,7 +117,7 @@ class Model {
         $save = $this->insert($fields);
         // populate object with the id
         if($save){
-          $this->id = $this->_db->lastID();
+          $this->id = static::getDb()->lastID();
         }
       } else {
         $save = $this->update($fields);
@@ -132,7 +139,7 @@ class Model {
   public function insert($fields) {
     if(empty($fields)) return false;
     if(array_key_exists('id', $fields)) unset($fields['id']);
-    return $this->_db->insert($this->_table, $fields);
+    return static::getDb()->insert(static::$_table, $fields);
   }
 
   /**
@@ -143,7 +150,7 @@ class Model {
    */
   public function update($fields) {
     if(empty($fields) || $this->id == '') return false;
-    return $this->_db->update($this->_table, $this->id, $fields);
+    return static::getDb()->update(static::$_table, $this->id, $fields);
   }
 
   /**
@@ -154,10 +161,10 @@ class Model {
   public function delete() {
     if($this->id == '' || !isset($this->id)) return false;
     $this->beforeDelete();
-    if($this->_softDelete) {
+    if(static::$_softDelete) {
       $deleted = $this->update(['deleted' => 1]);
     } else {
-      $deleted = $this->_db->delete($this->_table, $this->id);
+      $deleted = static::getDb()->delete(static::$_table, $this->id);
     }
     $this->afterDelete();
     return $deleted;
@@ -171,7 +178,7 @@ class Model {
    * @return [type]       [description]
    */
   public function query($sql, $bind=[]) {
-    return $this->_db->query($sql, $bind);
+    return static::getDb()->query($sql, $bind);
   }
 
   /**
@@ -180,9 +187,10 @@ class Model {
    * @return object
    */
   public function data() {
-    $data = new stdClass();
-    foreach(H::getObjectProperties($this) as $column => $value) {
-      $data->column = $value;
+    $data = new \stdClass();
+    foreach(static::get_columns() as $column) {
+      $columnName = $column->Field;
+      $data->{$columnName} = $this->{$columnName};
     }
     return $data;
   }
