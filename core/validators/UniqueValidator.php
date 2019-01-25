@@ -26,7 +26,7 @@ class UniqueValidator extends CustomValidator{
       }
     }
     $queryParams = ['conditions'=>$conditions,'bind'=>$bind];
-    $other = $this->_model->findFirst($queryParams);
+    $other = $this->_model::findFirst($queryParams);
     return(!$other);
   }
 }
