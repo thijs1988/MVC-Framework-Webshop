@@ -1,5 +1,6 @@
 <?php
 use Core\Session;
+use Core\FH;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,16 +11,18 @@ use Core\Session;
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title><?=$this->siteTitle(); ?></title>
     <link rel="stylesheet" href="<?=PROOT?>css/bootstrap.min.css" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="<?=PROOT?>css/custom.css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="<?=PROOT?>css/custom.css?v=<?=VERSION?>" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="<?=PROOT?>css/alertMsg.min.css?v=<?=VERSION?>" media="screen" title="no title" charset="utf-8">
     <script src="<?=PROOT?>js/jQuery-2.2.4.min.js"></script>
     <script src="<?=PROOT?>js/bootstrap.min.js"></script>
+    <script src="<?=PROOT?>js/alertMsg.min.js?v=<?=VERSION?>"></script>
 
     <?= $this->content('head'); ?>
 
   </head>
   <body>
     <?php include 'main_menu.php' ?>
-    <div class="container-fluid" style="min-height:cal(100% - 125px);">
+    <div class="container-fluid" style="min-height: calc(100vh - 72px);">
       <?= Session::displayMsg() ?>
       <?= $this->content('body'); ?>
     </div>
