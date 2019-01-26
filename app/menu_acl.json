@@ -1,5 +1,3 @@
 {
-  "Home" : "home",
-  "Login" : "register/login",
-  "Logout" : "register/logout"
+  "Home" : "home"
 }
