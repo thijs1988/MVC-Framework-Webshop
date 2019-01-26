@@ -40,7 +40,7 @@ class Session {
   }
 
   public static function displayMsg(){
-    $alerts = ['alert-info','alert-success','alert-warning','alert-danger'];
+    $alerts = ['alert-info','alert-success','alert-warning','alert-danger','alert-primary','alert-secondary','alert-dark','alert-light'];
     $html = '';
     foreach($alerts as $alert){
       if(self::exists($alert)){

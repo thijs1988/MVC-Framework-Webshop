@@ -29,7 +29,7 @@ class H {
     foreach($menu as $key => $val):
       $active = '';
       if($key == '%USERNAME%'){
-        $key = (Users::currentUser())? Users::currentUser()->fname : $key;
+        $key = (Users::currentUser())? "Hello " .Users::currentUser()->fname : $key;
       }
       if(is_array($val)): ?>
         <li class="nav-item dropdown">

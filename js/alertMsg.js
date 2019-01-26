@@ -14,7 +14,7 @@ var AlertMsg = new function(){
     this.el.innerHTML = this.msg;
     this.el.classList.remove('info','warning','success','danger','primary','secondary','light','dark');
     if(this.timeout){
-      this.timeout = this.timeout.clearTimeout();
+      this.timeout = clearTimeout(this.timeout);
     }
     var that = this;
     setTimeout(function(){
