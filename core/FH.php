@@ -17,13 +17,13 @@ class FH {
    * @return string                 returns an html string for input block
    */
   public static function inputBlock($type, $label, $name, $value='', $inputAttrs=[], $divAttrs=[],$errors=[]){
-    $divAttrs = self::blockErrors($divAttrs,$errors,$name);
+    $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
     $divString = self::stringifyAttrs($divAttrs);
     $inputString = self::stringifyAttrs($inputAttrs);
     $html = '<div' . $divString . '>';
     $html .= '<label class="control-label" for="'.$name.'">'.$label.'</label>';
     $html .= '<input type="'.$type.'" id="'.$name.'" name="'.$name.'" value="'.$value.'"'.$inputString.' />';
-    $html .= '<span class="help-block">'.self::errorMsg($errors,$name).'</span>';
+    $html .= '<span class="invalid-feedback">'.self::errorMsg($errors,$name).'</span>';
     $html .= '</div>';
     return $html;
   }
@@ -70,7 +70,7 @@ class FH {
    * @return string                    Returns an html string for checkbox block
    */
   public static function checkboxBlock($label,$name,$checked=false,$inputAttrs=[],$divAttrs=[],$errors=[]){
-    $divAttrs = self::blockErrors($divAttrs,$errors,$name);
+    $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
     $divString = self::stringifyAttrs($divAttrs);
     $inputString = self::stringifyAttrs($inputAttrs);
     $checkString = ($checked)? ' checked="checked"' : '';
@@ -95,7 +95,7 @@ class FH {
    * @return string                  Returns an html string for select block
    */
   public static function selectBlock($label,$name,$value,$options,$inputAttrs=[],$divAttrs=[],$errors=[]){
-    $divAttrs = self::blockErrors($divAttrs,$errors,$name);
+    $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
     $divString = self::stringifyAttrs($divAttrs);
     $inputString = self::stringifyAttrs($inputAttrs);
     $html = '<div' . $divString . '>';
@@ -118,7 +118,7 @@ class FH {
    * @return string                    Returns an html string for textarea block
    */
   public static function textareaBlock($label,$name,$value,$inputAttrs=[],$divAttrs=[],$errors=[]){
-    $divAttrs = self::blockErrors($divAttrs,$errors,$name);
+    $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
     $divString = self::stringifyAttrs($divAttrs);
     $inputString = self::stringifyAttrs($inputAttrs);
     $html = '<div' . $divString . '>';
@@ -193,7 +193,7 @@ class FH {
     $hasErrors = (!empty($errors))? ' has-errors' : '';
     $html = '<div class="form-errors"><ul class="bg-danger'.$hasErrors.'">';
     foreach($errors as $field => $error) {
-      $html .= '<li class="text-danger">'.$error.'</li>';
+      $html .= '<li class="text-white">'.$error.'</li>';
       $html .= '<script>jQuery("document").ready(function(){jQuery("#'.$field.'").parent().closest("div").addClass("has-error");});</script>';
     }
     $html .= '</ul></div>';
@@ -202,22 +202,23 @@ class FH {
 
 
   /**
-   * Adds a class to the surrounding div array if there are errors. This is used to style the form elements
-   * @method blockErrors
+   * adds an error class name to attrs if there is an error
+   * @method appendErrorClass
    * @param  array       $divAttrs default div attributes array
    * @param  array       $errors   pass in the form errors
    * @param  string      $name     name of the field
+   * @param  string      $class    class name to be applied
    * @return array                 returns an array with an appended class in the div attributes array
    */
-  public static function blockErrors($divAttrs,$errors,$name){
+  public static function appendErrorClass($attrs,$errors,$name,$class){
     if(array_key_exists($name,$errors)){
-      if(array_key_exists('class',$divAttrs)){
-        $divAttrs['class'] .= " has-error";
+      if(array_key_exists('class',$attrs)){
+        $attrs['class'] .= " " . $class;
       } else {
-        $divAttrs['class'] = "has-error";
+        $attrs['class'] = $class;
       }
     }
-    return $divAttrs;
+    return $attrs;
   }
 
   /**

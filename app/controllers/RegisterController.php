@@ -5,6 +5,7 @@ use Core\Router;
 use App\Models\Users;
 use App\Models\Login;
 use Core\H;
+use Core\Session;
 
 class RegisterController extends Controller {
 
@@ -39,7 +40,7 @@ class RegisterController extends Controller {
     if(Users::currentUser()) {
       Users::currentUser()->logout();
     }
-    Router::redirect('register/login');
+    Router::redirect('home');
   }
 
   public function registerAction() {

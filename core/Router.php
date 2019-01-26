@@ -112,7 +112,7 @@
       return $menuAry;
     }
 
-    private static function get_link($val) {
+    public static function get_link($val) {
       //check if external link
       if(preg_match('/https?:\/\//', $val) == 1) {
         return $val;
