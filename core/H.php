@@ -13,8 +13,8 @@ class H {
 
   public static function currentPage() {
     $currentPage = $_SERVER['REQUEST_URI'];
-    if($currentPage == PROOT || $currentPage == PROOT.'home/index') {
-      $currentPage = PROOT . 'home';
+    if($currentPage == PROOT || $currentPage == PROOT. DEFAULT_CONTROLLER .'/index') {
+      $currentPage = PROOT . strtolower(DEFAULT_CONTROLLER);
     }
     return $currentPage;
   }
