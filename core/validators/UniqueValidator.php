@@ -8,6 +8,11 @@ class UniqueValidator extends CustomValidator{
     $field = (is_array($this->field))? $this->field[0] : $this->field;
     $value = $this->_model->{$field};
 
+    if($value == '' || !isset($value)){
+      // this allows unique validator to be used with empty strings for fields that are not required.
+      return true;
+    }
+
     $conditions = ["{$field} = ?"];
     $bind = [$value];
 
