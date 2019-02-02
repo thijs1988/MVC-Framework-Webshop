@@ -37,7 +37,7 @@ class H {
           <div class="dropdown-menu <?=$dropdownClass?>">
             <?php foreach($val as $k => $v):
               $active = ($v == $currentPage)? 'active':''; ?>
-              <?php if($k == 'separator'): ?>
+              <?php if(substr($k,0,9) == 'separator'): ?>
                 <div role="separator" class="dropdown-divider"></div>
               <?php else: ?>
                 <a class="dropdown-item <?=$active?>" href="<?=$v?>"><?=$k?></a>

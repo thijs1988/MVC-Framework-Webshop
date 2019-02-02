@@ -1,6 +1,6 @@
 <?php
 
-  define('DEBUG', true);
+  define('DEBUG', true); // set debug to false for production
 
   define('DB_NAME', 'ruah'); // database name
   define('DB_USER', 'root'); // database user
@@ -10,8 +10,8 @@
   define('DEFAULT_CONTROLLER', 'Home'); // default controller if there isn't one defined in the url
   define('DEFAULT_LAYOUT', 'default'); // if no layout is set in the controller use this layout.
 
-  define('PROOT', '/blank_mvc_framework/'); // set this to '/' for a live server.
-  define('VERSION','0.0.1'); // release version this can be used to display version or version assets like css and js files useful for fighting cached browser files
+  define('PROOT', '/ruah/'); // set this to '/' for a live server.
+  define('VERSION','0.2'); // release version this can be used to display version or version assets like css and js files useful for fighting cached browser files
 
   define('SITE_TITLE', 'Ruah MVC Framework'); // This will be used if no site title is set
   define('MENU_BRAND', 'RUAH'); //This is the Brand text in the menu

@@ -20,9 +20,10 @@ class FH {
     $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
     $divString = self::stringifyAttrs($divAttrs);
     $inputString = self::stringifyAttrs($inputAttrs);
+    $id = str_replace('[]','',$name);
     $html = '<div' . $divString . '>';
-    $html .= '<label class="control-label" for="'.$name.'">'.$label.'</label>';
-    $html .= '<input type="'.$type.'" id="'.$name.'" name="'.$name.'" value="'.$value.'"'.$inputString.' />';
+    $html .= '<label class="control-label" for="'.$id.'">'.$label.'</label>';
+    $html .= '<input type="'.$type.'" id="'.$id.'" name="'.$name.'" value="'.$value.'"'.$inputString.' />';
     $html .= '<span class="invalid-feedback">'.self::errorMsg($errors,$name).'</span>';
     $html .= '</div>';
     return $html;
@@ -74,9 +75,10 @@ class FH {
     $divString = self::stringifyAttrs($divAttrs);
     $inputString = self::stringifyAttrs($inputAttrs);
     $checkString = ($checked)? ' checked="checked"' : '';
+    $id = str_replace('[]','',$name);
     $html = '<div'.$divString.'>';
-    $html .= '<label for="'.$name.'" class="control-label">'.$label.' <input type="checkbox" id="'.$name.'" name="'.$name.'" value="on"'.$checkString.$inputString.'>';
-    $html .= '<span class="help-block">'.self::errorMsg($errors,$name).'</span>';
+    $html .= '<label for="'.$id.'" class="control-label">'.$label.' <input type="checkbox" id="'.$id.'" name="'.$name.'" value="on"'.$checkString.$inputString.'>';
+    $html .= '<span class="invalid-feedback">'.self::errorMsg($errors,$name).'</span>';
     $html .= '</label>';
     $html .= '</div>';
     return $html;
@@ -98,10 +100,11 @@ class FH {
     $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
     $divString = self::stringifyAttrs($divAttrs);
     $inputString = self::stringifyAttrs($inputAttrs);
+    $id = str_replace('[]','',$name);
     $html = '<div' . $divString . '>';
-    $html .= '<label for="'.$name.'" class="control-label">' . $label . '</label>';
-    $html .= '<select id="'.$name.'" name="'.$name.'" value="'.$value.'"'.$inputString.'>'.self::optionsForSelect($options).'</select>';
-    $html .= '<span class="help-block">'.self::errorMsg($errors,$name).'</span>';
+    $html .= '<label for="'.$id.'" class="control-label">' . $label . '</label>';
+    $html .= '<select id="'.$id.'" name="'.$name.'" value="'.$value.'"'.$inputString.'>'.self::optionsForSelect($options).'</select>';
+    $html .= '<span class="invalid-feedback">'.self::errorMsg($errors,$name).'</span>';
     $html .= '</div>';
     return $html;
   }
@@ -121,10 +124,11 @@ class FH {
     $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
     $divString = self::stringifyAttrs($divAttrs);
     $inputString = self::stringifyAttrs($inputAttrs);
+    $id = str_replace('[]','',$name);
     $html = '<div' . $divString . '>';
-    $html .= '<label for="'.$name.'" class="control-label">' . $label . '</label>';
-    $html .= '<textarea id="'.$name.'" name="'.$name.'"'.$inputString.'>'.$value.'</textarea>';
-    $html .= '<span class="help-block">'.self::errorMsg($errors,$name).'</span>';
+    $html .= '<label for="'.$id.'" class="control-label">' . $label . '</label>';
+    $html .= '<textarea id="'.$id.'" name="'.$name.'"'.$inputString.'>'.$value.'</textarea>';
+    $html .= '<span class="invalid-feedback">'.self::errorMsg($errors,$name).'</span>';
     $html .= '</div>';
     return $html;
   }
@@ -191,10 +195,9 @@ class FH {
    */
   public static function displayErrors($errors) {
     $hasErrors = (!empty($errors))? ' has-errors' : '';
-    $html = '<div class="form-errors"><ul class="bg-danger'.$hasErrors.'">';
+    $html = '<div class="form-errors"><ul class="bg-light'.$hasErrors.'">';
     foreach($errors as $field => $error) {
-      $html .= '<li class="text-white">'.$error.'</li>';
-      $html .= '<script>jQuery("document").ready(function(){jQuery("#'.$field.'").parent().closest("div").addClass("has-error");});</script>';
+      $html .= '<li class="text-danger">'.$error.'</li>';
     }
     $html .= '</ul></div>';
     return $html;

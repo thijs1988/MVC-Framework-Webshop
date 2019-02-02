@@ -93,7 +93,7 @@
         if(is_array($val)) {
           $sub = [];
           foreach($val as $k => $v) {
-            if($k == 'separator' && !empty($sub)) {
+            if(substr($k,0,9) == 'separator' && !empty($sub)) {
               $sub[$k] = '';
               continue;
             }else if($finalVal = self::get_link($v)) {
