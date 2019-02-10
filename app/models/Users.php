@@ -16,7 +16,7 @@ class Users extends Model {
   protected static $_table='users', $_softDelete = true;
   public static $currentLoggedInUser = null;
   public $id,$username,$email,$password,$fname,$lname,$acl,$deleted = 0,$confirm;
-  public const blackListedFormKeys = ['id','deleted'];
+  const blackListedFormKeys = ['id','deleted'];
 
   public function validator(){
     $this->runValidation(new RequiredValidator($this,['field'=>'fname','msg'=>'First Name is required.']));
@@ -60,7 +60,10 @@ class Users extends Model {
       Cookie::set(REMEMBER_ME_COOKIE_NAME, $hash, REMEMBER_ME_COOKIE_EXPIRY);
       $fields = ['session'=>$hash, 'user_agent'=>$user_agent, 'user_id'=>$this->id];
       self::$_db->query("DELETE FROM user_sessions WHERE user_id = ? AND user_agent = ?", [$this->id, $user_agent]);
-      self::$_db->insert('user_sessions', $fields);
+      $us = new UserSessions();
+      $us->assign($fields);
+      $us->save();
+      // self::$_db->insert('user_sessions', $fields);
     }
   }
 
