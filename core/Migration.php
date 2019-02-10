@@ -31,8 +31,9 @@
       id INT AUTO_INCREMENT,
       PRIMARY KEY (id)
       )  ENGINE=INNODB;";
-      echo "Creating Table " . $table . "\n";
-    return !$this->_db->query($sql)->error();
+    $res = !$this->_db->query($sql)->error();
+    $this->_printColor($res,"Creating Table " . $table);
+    return $res;
   }
 
   /**
@@ -43,8 +44,10 @@
    */
   public function dropTable($table){
     $sql = "DROP TABLE IF EXISTS {$table}";
-    echo "Dropping Table " . $table . "\n";
-    return !$this->_db->query($sql)->error();
+    $msg =  "Dropping Table " . $table;
+    $resp = !$this->_db->query($sql)->error();
+    $this->_printColor($resp,$msg);
+    return $resp;
   }
 
   /**
@@ -61,8 +64,10 @@
     $definition = array_key_exists('definition',$attrs)? $attrs['definition']." " : "";
     $order = $this->_orderingColumn($attrs);
     $sql = "ALTER TABLE {$table} ADD COLUMN {$name} {$formattedType} {$definition}{$order};";
-    echo "Adding Column " . $name . " To ". $table . "\n";
-    return !$this->_db->query($sql)->error();
+    $msg = "Adding Column " . $name . " To ". $table;
+    $resp = !$this->_db->query($sql)->error();
+    $this->_printColor($resp,$msg);
+    return $resp;
   }
 
   /**
@@ -74,8 +79,10 @@
    */
   public function dropColumn($table, $name){
     $sql = "ALTER TABLE {$table} DROP COLUMN {$name};";
-    echo "Dropping Column " . $name . " From ". $table . "\n";
-    return !$this->_db->query($sql)->error();
+    $msg = "Dropping Column " . $name . " From ". $table;
+    $resp = !$this->_db->query($sql)->error();
+    $this->_printColor($resp,$msg);
+    return $resp;
   }
 
   /**
@@ -99,8 +106,10 @@
    */
   public function addIndex($table,$name){
     $sql = "ALTER TABLE {$table} ADD INDEX {$name} ({$name})";
-    echo "Adding Index " . $name . " To ". $table . "\n";
-    return !$this->_db->query($sql)->error();
+    $msg = "Adding Index " . $name . " To ". $table;
+    $resp = !$this->_db->query($sql)->error();
+    $this->_printColor($resp,$msg);
+    return $resp;
   }
 
   /**
@@ -112,8 +121,10 @@
    */
   public function dropIndex($table, $name){
     $sql = "DROP INDEX {$name} ON {$table}";
-    echo "Dropping Index " . $name . " From ". $table . "\n";
-    return !$this->_db->query($sql)->error();
+    $msg = "Dropping Index " . $name . " From ". $table;
+    $resp = !$this->_db->query($sql)->error();
+    $this->_printColor($resp,$msg);
+    return $resp;
   }
 
   /**
@@ -217,5 +228,12 @@
     } else {
       return "";
     }
+  }
+
+  protected function _printColor($res,$msg){
+    $for = ($res)? "\e[0;37;" : "\e[0;37;";
+    $back = ($res)? "42m" : "41m";
+    $title = ($res)? "SUCCESS: " : "FAIL: ";
+    echo $for.$back."\n\n"."    ".$title.$msg."\n\e[0m\n";
   }
 }
