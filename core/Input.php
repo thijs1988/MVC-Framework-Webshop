@@ -30,7 +30,8 @@ class Input {
       }
       return $data;
     }
-    return trim(FH::sanitize($_REQUEST[$input]));
+
+    return (array_key_exists($input,$_REQUEST))?trim(FH::sanitize($_REQUEST[$input])) : '';
   }
 
   public function csrfCheck(){
