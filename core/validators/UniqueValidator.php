@@ -1,19 +1,19 @@
 <?php
 namespace Core\Validators;
 use Core\Validators\CustomValidator;
+use Core\H;
 
 class UniqueValidator extends CustomValidator{
 
   public function runValidation(){
-    $field = (is_array($this->field))? $this->field[0] : $this->field;
-    $value = $this->_model->{$field};
+    $value = $this->_model->{$this->field};
 
     if($value == '' || !isset($value)){
       // this allows unique validator to be used with empty strings for fields that are not required.
       return true;
     }
 
-    $conditions = ["{$field} = ?"];
+    $conditions = ["{$this->field} = ?"];
     $bind = [$value];
 
     //check updating record
@@ -23,12 +23,9 @@ class UniqueValidator extends CustomValidator{
     }
 
     //this allows you to check multiple fields for Unique
-    if(is_array($this->field)){
-      array_shift($this->field);
-      foreach($this->field as $adds){
-        $condtions[] = "{$adds} = ?";
-        $bind[] = $this->_model->{$adds};
-      }
+    foreach($this->additionalFieldData as $adds){
+      $conditions[] = "{$adds} = ?";
+      $bind[] = $this->_model->{$adds};
     }
     $queryParams = ['conditions'=>$conditions,'bind'=>$bind];
     $other = $this->_model::findFirst($queryParams);
