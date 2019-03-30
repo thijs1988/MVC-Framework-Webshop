@@ -103,7 +103,7 @@ class FH {
     $id = str_replace('[]','',$name);
     $html = '<div' . $divString . '>';
     $html .= '<label for="'.$id.'" class="control-label">' . $label . '</label>';
-    $html .= '<select id="'.$id.'" name="'.$name.'" value="'.$value.'"'.$inputString.'>'.self::optionsForSelect($options).'</select>';
+    $html .= '<select id="'.$id.'" name="'.$name.'" '.$inputString.'>'.self::optionsForSelect($options,$value).'</select>';
     $html .= '<span class="invalid-feedback">'.self::errorMsg($errors,$name).'</span>';
     $html .= '</div>';
     return $html;
@@ -242,10 +242,11 @@ class FH {
    * @param  array            $options ['option value'=>'Label for option']
    * @return string                    returns html string to be used in select html elements
    */
-  public static function optionsForSelect($options){
+  public static function optionsForSelect($options,$selectedValue){
     $html = "";
     foreach($options as $value => $display){
-      $html .= '<option value="'.$value.'">'.$display.'</option>';
+      $selStr = ($selectedValue == $value)? ' selected="selected"' : '';
+      $html .= '<option value="'.$value.'"'.$selStr.'>'.$display.'</option>';
     }
     return $html;
   }
