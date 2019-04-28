@@ -4,7 +4,7 @@
   use Core\H;
 
   abstract class Migration{
-    protected $_db;
+    protected $_db, $_isCli;
 
   protected $_columnTypesMap = [
     'int' => '_intColumn', 'integer' => '_intColumn', 'tinyint' => '_tinyintColumn', 'smallint' => '_smallintColumn',
@@ -14,8 +14,9 @@
     'char' => '_charColumn', 'varchar' => '_varcharColumn', 'text' => '_textColumn'
   ];
 
-  public function __construct(){
+  public function __construct($isCli){
     $this->_db = DB::getInstance();
+    $this->_isCli = $isCli;
   }
 
   abstract function up();
@@ -231,9 +232,16 @@
   }
 
   protected function _printColor($res,$msg){
-    $for = ($res)? "\e[0;37;" : "\e[0;37;";
-    $back = ($res)? "42m" : "41m";
     $title = ($res)? "SUCCESS: " : "FAIL: ";
-    echo $for.$back."\n\n"."    ".$title.$msg."\n\e[0m\n";
+
+    if($this->_isCli){
+      $for = ($res)? "\e[0;37;" : "\e[0;37;";
+      $back = ($res)? "42m" : "41m";
+      echo $for.$back."\n\n"."    ".$title.$msg."\n\e[0m\n";
+    } else {
+      $color = ($res)? "#006600" : "#CC0000";
+      echo '<p style="color:'.$color.'">'.$title.$msg.'</p>';
+    }
+
   }
 }
