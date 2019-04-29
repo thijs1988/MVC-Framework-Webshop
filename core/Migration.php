@@ -105,8 +105,9 @@
    * @param  string   $name  name of column to add index
    * @return boolean
    */
-  public function addIndex($table,$name){
-    $sql = "ALTER TABLE {$table} ADD INDEX {$name} ({$name})";
+  public function addIndex($table,$name,$columns=false){
+    $columns = (!$columns)? $name : $columns;
+    $sql = "ALTER TABLE {$table} ADD INDEX {$name} ({$columns})";
     $msg = "Adding Index " . $name . " To ". $table;
     $resp = !$this->_db->query($sql)->error();
     $this->_printColor($resp,$msg);
@@ -136,6 +137,19 @@
   public function addSoftDelete($table){
     $this->addColumn($table,'deleted','tinyint');
     $this->addIndex($table, 'deleted');
+  }
+
+  /**
+   * run raw SQL statements
+   * @method query
+   * @param  string $sql SQL Command to run
+   * @return boolean
+   */
+  public function query($sql){
+    $msg = "Running Query: \"" . $sql ."\"";
+    $resp = !$this->_db->query($sql)->error();
+    $this->printColor($resp,$msg);
+    return $resp;
   }
 
   protected function _textColumn($attrs){
