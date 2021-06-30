@@ -2,6 +2,8 @@
   "Guest" : {
     "denied" : {},
     "Home" : ["*"],
+    "Products" : ["*"],
+    "Cart" : ["*"],
     "Register" : ["login", "register"],
     "Restricted" : ["*"]
   },
@@ -10,5 +12,11 @@
       "Register" : ["login", "register"]
     },
     "Register" : ["logout"]
+  },
+  "SuperAdmin" : {
+    "denied" : {},
+    "Admindashboard" : ["*"],
+    "Adminproducts" : ["*"],
+    "Adminbrands" : ["*"]
   }
 }
