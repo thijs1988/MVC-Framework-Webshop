@@ -1,6 +1,7 @@
 <?php
 namespace Core\Validators;
 use \Exception;
+use Core\H;
 
 abstract class CustomValidator {
   public $success=true, $msg='', $field, $additionalFieldData=[],$rule;

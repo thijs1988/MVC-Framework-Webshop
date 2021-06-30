@@ -1,8 +1,8 @@
 <?php
   namespace Core;
   use Core\Session;
-  use App\Models\Users;
-
+  use App\Models\{Users,Menu};
+  use Core\H;
   class Router {
 
     public static function route($url) {
@@ -86,17 +86,34 @@
     }
 
     public static function getMenu($menu) {
+      $db = DB::getInstance();
+      $sql = "SELECT m.id, m.category, m.parent_id, m.link
+      from menu as m
+      ORDER BY id";
+      $row = $db->query($sql)->results();
+      $json  = json_encode($row);
+      $array = json_decode($json, true);
+      $jason_array = Menu::buildTree($array);
+      $jsonAry = json_encode($jason_array);
+      file_put_contents(ROOT . DS . 'app' . DS . 'menu_acl.json', $jsonAry);
       $menuAry  = [];
       $menuFile = file_get_contents(ROOT . DS . 'app' . DS . $menu . '.json');
       $acl = json_decode($menuFile, true);
+      if ($menu == 'menu_acl'){
+        return $jason_array;
+      }
+
+      if ($menu != 'menu_acl'){
       foreach($acl as $key => $val) {
         if(is_array($val)) {
           $sub = [];
           foreach($val as $k => $v) {
+
             if(substr($k,0,9) == 'separator' && !empty($sub)) {
               $sub[$k] = '';
               continue;
             }else if($finalVal = self::get_link($v)) {
+
               $sub[$k] = $finalVal;
             }
           }
@@ -109,8 +126,11 @@
           }
         }
       }
+
       return $menuAry;
+
     }
+  }
 
     public static function get_link($val) {
       //check if external link

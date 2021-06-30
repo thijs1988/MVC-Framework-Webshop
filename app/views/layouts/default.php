@@ -14,7 +14,7 @@ use Core\FH;
     <link rel="stylesheet" href="<?=PROOT?>css/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="<?=PROOT?>css/custom.css?v=<?=VERSION?>" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="<?=PROOT?>css/alertMsg.min.css?v=<?=VERSION?>" media="screen" title="no title" charset="utf-8">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
     <?= $this->content('head'); ?>
 
   </head>
@@ -25,8 +25,8 @@ use Core\FH;
       <?= $this->content('body'); ?>
     </div>
     <script src="<?=PROOT?>js/jQuery-3.3.1.min.js"></script>
-    <script src="<?=PROOT?>js/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="<?=PROOT?>js/bootstrap4/bootstrap.min.js"></script>
-    <script src="<?=PROOT?>js/alertMsg.min.js?v=<?=VERSION?>"></script>
+    <script src="<?=PROOT?>js/alertMsg.min.js"></script>
+    <script src="<?=PROOT?>js/starrr.js"></script>
   </body>
 </html>

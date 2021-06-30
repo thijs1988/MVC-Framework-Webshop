@@ -1,11 +1,18 @@
 {
   "Dashboard" : "admindashboard/index",
+  "Create Menu" : "menu/index",
   "Products" : {
     "View Products" : "adminproducts/index",
-    "Add Product" : "adminproducts/add",
+    "Add Product" : "adminproducts/edit/new",
     "separator" : " ",
     "Options" : "adminproducts/options"
   },
   "Brands" : "adminbrands/index",
+  "Orders" : {
+    "New Orders" : "adminsales/index",
+    "Completed Orders" : "adminsales/completed",
+    "Profit From Orders" : "adminsales/profit"
+  },
+  "YearTotals" : "adminsales/yeartotals",
   "Visit Site" : "home/index"
 }

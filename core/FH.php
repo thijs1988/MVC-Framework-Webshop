@@ -16,18 +16,18 @@ class FH {
    * @param  array      $errors     (optional) array of all form errors
    * @return string                 returns an html string for input block
    */
-  public static function inputBlock($type, $label, $name, $value='', $inputAttrs=[], $divAttrs=[],$errors=[]){
-    $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
-    $divString = self::stringifyAttrs($divAttrs);
-    $inputString = self::stringifyAttrs($inputAttrs);
-    $id = str_replace('[]','',$name);
-    $html = '<div' . $divString . '>';
-    $html .= '<label class="control-label" for="'.$id.'">'.$label.'</label>';
-    $html .= '<input type="'.$type.'" id="'.$id.'" name="'.$name.'" value="'.$value.'"'.$inputString.' />';
-    $html .= '<span class="invalid-feedback">'.self::errorMsg($errors,$name).'</span>';
-    $html .= '</div>';
-    return $html;
-  }
+   public static function inputBlock($type, $label, $name, $value='', $inputAttrs=[], $divAttrs=[],$errors=[]){
+     $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
+     $divString = self::stringifyAttrs($divAttrs);
+     $inputString = self::stringifyAttrs($inputAttrs);
+     $id = str_replace('[]','',$name);
+     $html = '<div' . $divString . '>';
+     $html .= '<label class="control-label" for="'.$id.'">'.$label.'</label>';
+     $html .= '<input type="'.$type.'" id="'.$id.'" name="'.$name.'" value="'.$value.'"'.$inputString.' />';
+     $html .= '<span class="invalid-feedback">'.self::errorMsg($errors,$name).'</span>';
+     $html .= '</div>';
+     return $html;
+   }
 
   /**
    * Creates a submit input
@@ -70,14 +70,14 @@ class FH {
    * @param  array         $errors     (optional) Pass in all form errors
    * @return string                    Returns an html string for checkbox block
    */
-  public static function checkboxBlock($label,$name,$checked=false,$inputAttrs=[],$divAttrs=[],$errors=[]){
+  public static function checkboxBlock($label,$name,$value,$checked=false,$inputAttrs=[],$divAttrs=[],$errors=[]){
     $inputAttrs = self::appendErrorClass($inputAttrs,$errors,$name,'is-invalid');
     $divString = self::stringifyAttrs($divAttrs);
     $inputString = self::stringifyAttrs($inputAttrs);
     $checkString = ($checked)? ' checked="checked"' : '';
     $id = str_replace('[]','',$name);
     $html = '<div'.$divString.'>';
-    $html .= '<label for="'.$id.'" class="control-label">'.$label.' <input type="checkbox" id="'.$id.'" name="'.$name.'" value="on"'.$checkString.$inputString.'>';
+    $html .= '<label for="'.$id.'" class="control-label">'.$label.' <input type="checkbox" id="'.$id.'" name="'.$name.'" value="'.$value.'"'.$checkString.$inputString.'>';
     $html .= '<span class="invalid-feedback">'.self::errorMsg($errors,$name).'</span>';
     $html .= '</label>';
     $html .= '</div>';

@@ -7,7 +7,7 @@ namespace Core;
 class Model {
   protected $_modelName, $_validates=true,$_validationErrors=[];
   public $id;
-  protected static $_db, $_table, $_softDelete=false;
+  protected static $_db, $_table, $_softDelete=true;
 
   public function __construct() {
     $this->_modelName = str_replace(' ', '', ucwords(str_replace('_',' ', static::$_table)));

@@ -16,10 +16,18 @@ class Session {
   }
 
   public static function delete($name) {
-    if(self::exists($name)) {
-      unset($_SESSION[$name]);
-    }
-  }
+   if(self::exists($name)) {
+     unset($_SESSION[$name]);
+   }
+ }
+
+ public static function deleteSessionArray($names = []){
+   foreach($names as $name){
+     if(self::exists($name)) {
+       unset($_SESSION[$name]);
+     }
+   }
+ }
 
   public static function uagent_no_version() {
     $uagent = $_SERVER['HTTP_USER_AGENT'];

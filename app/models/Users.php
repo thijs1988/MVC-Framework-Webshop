@@ -1,16 +1,9 @@
 <?php
 namespace App\Models;
 use Core\Model;
-use App\Models\Users;
-use App\Models\UserSessions;
-use Core\Cookie;
-use Core\Session;
-use Core\Validators\MinValidator;
-use Core\Validators\MaxValidator;
-use Core\Validators\RequiredValidator;
-use Core\Validators\EmailValidator;
-use Core\Validators\MatchesValidator;
-use Core\Validators\UniqueValidator;
+use App\Models\{Users,UserSessions};
+use Core\{Cookie,Session};
+use Core\Validators\{MinValidator,MaxValidator,RequiredValidator,EmailValidator,MatchesValidator,UniqueValidator};
 
 class Users extends Model {
   protected static $_table='users', $_softDelete = true;

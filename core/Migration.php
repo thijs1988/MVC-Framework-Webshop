@@ -148,7 +148,7 @@
   public function query($sql){
     $msg = "Running Query: \"" . $sql ."\"";
     $resp = !$this->_db->query($sql)->error();
-    $this->printColor($resp,$msg);
+    $this->_printColor($resp,$msg);
     return $resp;
   }
 

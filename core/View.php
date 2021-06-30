@@ -1,5 +1,6 @@
 <?php
 namespace Core;
+use core\H;
 
   class View {
     protected $_siteTitle = SITE_TITLE,  $_layout = DEFAULT_LAYOUT;

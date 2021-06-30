@@ -20,6 +20,7 @@
   }
 
   spl_autoload_register('autoload');
+  require_once('vendor/autoload.php');
   session_start();
 
   $url = isset($_SERVER['PATH_INFO']) ? explode('/', ltrim($_SERVER['PATH_INFO'], '/')) : [];
